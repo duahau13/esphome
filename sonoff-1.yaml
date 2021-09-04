@@ -1,0 +1,66 @@
+esphome:
+  name: sonoff-1
+  platform: ESP8266
+  board: esp8285
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+  password: "26088926093f4a43214ea9b8576a959c"
+
+wifi:
+  ssid: "apollo"
+  password: "chuotbodt"
+  
+  #manual_ip:
+    #static_ip: 192.168.0.41
+    #gateway: 192.168.0.1
+    #subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  #ap:
+    #ssid: "Sonoff-1 Fallback Hotspot"
+    #password: "u2hvwma10ZiO"
+
+# captive_portal:
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Sonoff Basic Button"
+    internal: true
+    on_press:
+      - switch.toggle: relay
+  - platform: gpio
+    pin:
+      number: GPIO14
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Sonoff Touch Button"
+    internal: true
+    on_press:
+      - switch.toggle: relay
+      - switch.toggle: light
+
+switch:
+  - platform: gpio
+    name: "Sonoff Basic Relay"
+    pin: GPIO12
+    id: relay
+  - platform: gpio
+    name: "Switch Led"
+    pin: GPIO3
+    id: light
+    internal: true
+
+status_led:
+  pin:
+    number: GPIO13
+    inverted: yes
