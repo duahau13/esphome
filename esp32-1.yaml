@@ -1,44 +1,24 @@
-esphome:
-  name: esp32-1
-  platform: ESP32
-  board: nodemcu-32s
+substitutions:
+  node_name: esp32
+  node_friendly_name: "nodemcu32"
+  node_platform: ESP32
+  node_board: nodemcu-32s
+  static_ip: 192.168.0.122
+  i2c_sda: GPIO19
+  i2c_scl: GPIO21
+  <<: !include shared/base/secrets.yaml
 
-# Enable logging
-logger:
-
-# Enable Home Assistant API
-api:
-
-ota:
-  password: "0dabc1edfd99e7ab892b470ea6c15615"
-
-wifi:
-  ssid: "apollo"
-  password: "chuotbodt"
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "Esp32-1 Fallback Hotspot"
-    password: "MhbtT0UlmOWi"
-
-captive_portal:
+packages:
+  device_base: !include shared/base/device_base.yaml
 
 font:
-  - file: 'fonts/Eurosti.ttf'
+  - file: "fonts/Eurosti.ttf"
     id: font1
-    size: 8
-
-spi:
-  clk_pin: GPIO23
-  mosi_pin: GPIO21
+    size: 16
 
 display:
-  - platform: waveshare_epaper
-    cs_pin: GPIO22
-    dc_pin: GPIO19
-    #busy_pin: D4
-    #reset_pin: D5
-    model: 2.90in
-    full_update_every: 30
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    address: 0x3c
     lambda: |-
       it.print(0, 0, id(font1), "Hello World!");

@@ -4,13 +4,25 @@ substitutions:
   node_platform: ESP8266
   node_board: d1_mini
   static_ip: 192.168.0.121
-  #  log_level: INFO
-  #i2c_sda: D7
-  #i2c_scl: D8
+  i2c_sda: D7
+  i2c_scl: D8
   <<: !include shared/base/secrets.yaml
 
 packages:
   device_base: !include shared/base/device_base.yaml
+
+font:
+  - file: "fonts/Eurosti.ttf"
+    id: font1
+    size: 8
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    reset_pin: D0
+    address: 0x3c
+    lambda: |-
+      it.print(0, 0, id(font1), "Hello World!");
 
 sensor:
   - <<: !include shared/sensor/uptime.yaml
