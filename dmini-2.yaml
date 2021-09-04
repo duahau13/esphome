@@ -3,11 +3,24 @@ substitutions:
   node_friendly_name: "Fan 2"
   node_platform: ESP8266
   node_board: d1_mini
-  pin_sda: D6
-  pin_scl: D7
+  static_ip: 192.168.0.121
+  #  log_level: INFO
+  #i2c_sda: D7
+  #i2c_scl: D8
   <<: !include shared/base/secrets.yaml
 
 packages:
   device_base: !include shared/base/device_base.yaml
 
 sensor:
+  - <<: !include shared/sensor/uptime.yaml
+  - <<: !include shared/sensor/wifi_signal.yaml
+
+text_sensor:
+  - <<: !include shared/text_sensor/uptime_human.yaml
+
+binary_sensor:
+  - <<: !include shared/binary_sensor/connection_status.yaml
+
+switch:
+  - <<: !include shared/switch/restart_switch.yaml

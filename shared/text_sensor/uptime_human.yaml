@@ -1,0 +1,4 @@
+- platform: template
+  name: ${node_friendly_name} Uptime
+  id: uptime_human
+  icon: mdi:clock-start

@@ -1,0 +1,2 @@
+- platform: status
+  name: "${node_friendly_name} Status"

@@ -1,0 +1,2 @@
+- platform: restart
+  name: "${node_friendly_name} Restart"

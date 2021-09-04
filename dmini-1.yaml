@@ -12,7 +12,6 @@ esphome:
       lambda: !lambda |-
         id(fan_1).speed = 30;
         id(my_encoder).set_value(30);
-          
 
 # Enable logging
 logger:
@@ -51,7 +50,7 @@ binary_sensor:
     name: ${node_friendly_name} Rotary Switch
     internal: true
     on_press:
-       then:
+      then:
         - lambda: !lambda |-
             id(my_encoder).set_value(id(fan_1).speed);
         - fan.toggle: fan_1
@@ -67,8 +66,8 @@ sensor:
     max_value: 100
     filters:
       - or:
-        - debounce: 0.1s
-        - delta: 10
+          - debounce: 0.1s
+          - delta: 10
       - lambda: |-
           if (x < 0.0) return 0.0;
           if (x > 100.0) return 100.0;
@@ -90,7 +89,7 @@ sensor:
   - platform: template
     name: ${node_friendly_name} Battery Level
     device_class: battery
-    unit_of_measurement: '%'
+    unit_of_measurement: "%"
     accuracy_decimals: 0
     update_interval: 600s
     # Working battery range from 10.6V to 14.6V
@@ -119,7 +118,7 @@ sensor:
                 (minutes ? String(minutes) + "m " : "") +
                 (String(seconds) + "s")
               ).c_str();
-    
+
   - platform: wifi_signal
     name: ${node_friendly_name} WiFi Signal
     id: wifi_sensor
