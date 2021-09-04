@@ -1,0 +1,4 @@
+- platform: wifi_signal
+  name: ${node_friendly_name} Wifi Signal
+  id: wifi_sensor
+  update_interval: 600s

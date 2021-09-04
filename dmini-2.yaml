@@ -1,0 +1,13 @@
+substitutions:
+  node_name: bldc-fan-2
+  node_friendly_name: "Fan 2"
+  node_platform: ESP8266
+  node_board: d1_mini
+  pin_sda: D6
+  pin_scl: D7
+  <<: !include shared/base/secrets.yaml
+
+packages:
+  device_base: !include shared/base/device_base.yaml
+
+sensor:
