@@ -1,24 +1,25 @@
-substitutions:
-  node_name: esp32
-  node_friendly_name: "nodemcu32"
-  node_platform: ESP32
-  node_board: nodemcu-32s
-  static_ip: 192.168.0.122
-  i2c_sda: GPIO19
-  i2c_scl: GPIO21
-  <<: !include shared/base/secrets.yaml
+esphome:
+  name: esp32-1
+  platform: ESP32
+  board: nodemcu-32s
 
-packages:
-  device_base: !include shared/base/device_base.yaml
+# Enable logging
+logger:
 
-font:
-  - file: "fonts/Eurosti.ttf"
-    id: font1
-    size: 16
+# Enable Home Assistant API
+api:
 
-display:
-  - platform: ssd1306_i2c
-    model: "SSD1306 128x64"
-    address: 0x3c
-    lambda: |-
-      it.print(0, 0, id(font1), "Hello World!");
+ota:
+  password: "0dabc1edfd99e7ab892b470ea6c15615"
+
+wifi:
+  ssid: "apollo"
+  password: "chuotbodt"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esp32-1 Fallback Hotspot"
+    password: "MhbtT0UlmOWi"
+
+captive_portal:
+

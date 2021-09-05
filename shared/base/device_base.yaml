@@ -8,10 +8,10 @@ wifi:
   ssid: ${wifi_ssid}
   password: ${wifi_password}
   fast_connect: true
-  manual_ip:
-    static_ip: ${static_ip}
-    gateway: 192.168.0.1
-    subnet: 255.255.255.0
+  #manual_ip:
+  #  static_ip: ${static_ip}
+  #  gateway: 192.168.0.1
+  #  subnet: 255.255.255.0
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: ${node_name}
@@ -21,7 +21,6 @@ captive_portal:
 
 # Enable logging
 logger:
-#  level: ${log_level}
 
 api:
   password: ${api_password}
@@ -29,9 +28,3 @@ api:
 
 ota:
   password: ${ota_password}
-
-# I²C Bus
-i2c:
-  sda: ${i2c_sda}
-  scl: ${i2c_scl}
-  scan: true
