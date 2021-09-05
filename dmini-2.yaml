@@ -28,7 +28,7 @@ display:
       it.print(0, 16, id(font1), "Call me esp8266!");
 
 animation:
-  - file: "shared/icons/fan_animation.gif"
+  - file: "shared/icon/fan_animation.gif"
     id: fan_animation
 
 sensor:
