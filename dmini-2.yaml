@@ -17,15 +17,17 @@ i2c:
 font:
   - file: "fonts/Eurosti.ttf"
     id: font1
-    size: 14
+    size: 32
 
 display:
   - platform: ssd1306_i2c
+    id: oled1
     model: "SSD1306 128x64"
+    update_interval: 0.5s
     address: 0x3c
     lambda: |-
       id(fan_animation).next_frame(); it.image(0, 0, id(fan_animation));
-      it.print(0, 16, id(font1), "Call me esp8266!");
+      it.print(0, 16, id(font1), "90%");
 
 animation:
   - file: "shared/icon/fan_animation.gif"
@@ -34,12 +36,35 @@ animation:
 sensor:
   - <<: !include shared/sensor/uptime.yaml
   - <<: !include shared/sensor/wifi_signal.yaml
+  - platform: rotary_encoder
+    name: ${node_friendly_name} Rotary Encoder
+    id: my_encoder
+    pin_a: D4
+    pin_b: D3
+    resolution: 1
+    min_value: 0
+    max_value: 100
+    filters:
+      - or:
+          - debounce: 0.1s
+          - delta: 10
+      - lambda: |-
+          if (x < 0.0) return 0.0;
+          if (x > 100.0) return 100.0;
+          return x;
 
 text_sensor:
   - <<: !include shared/text_sensor/uptime_human.yaml
 
 binary_sensor:
   - <<: !include shared/binary_sensor/connection_status.yaml
+  - platform: gpio
+    pin:
+      number: RX
+      mode: INPUT_PULLUP
+      inverted: true
+    name: ${node_friendly_name} Rotary Switch
+    #internal: true
 
 switch:
   - <<: !include shared/switch/restart_switch.yaml
