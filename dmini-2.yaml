@@ -19,6 +19,7 @@ font:
     id: font1
     size: 32
 
+# Oled display
 display:
   - platform: ssd1306_i2c
     id: oled1
