@@ -135,5 +135,5 @@ text_sensor:
 output:
   - platform: esp8266_pwm
     pin: D1
-    frequency: 15000 Hz
+    frequency: 18000 Hz
     id: pwm_output

@@ -10,14 +10,45 @@ substitutions:
 packages:
   device_base: !include shared/base/device_base.yaml
 
+esphome:
+  on_boot:
+    priority: 600
+    then:
+      lambda: !lambda |-
+        id(fan_2).speed = 30;
+        id(my_encoder).set_value(30);
+
 i2c:
   scl: ${i2c_scl}
   sda: ${i2c_sda}
 
+fan:
+  - platform: speed
+    output: pwm_output
+    name: ${node_friendly_name}
+    id: fan_2
+
+# Output PWM to fan
+output:
+  - platform: esp8266_pwm
+    pin: D5
+    frequency: 18000 Hz
+    id: pwm_output
+
+# Font family
 font:
   - file: "fonts/Eurosti.ttf"
     id: font1
     size: 32
+  - file: "fonts/materialdesignicons-webfont.ttf"
+    id: icon_font
+    size: 15
+    glyphs:
+      - "\U000F091F" # mdi-wifi-strength-1
+      - "\U000F0922" # mdi-wifi-strength-2
+      - "\U000F0925" # mdi-wifi-strength-3
+      - "\U000F0928" # mdi-wifi-strength-4
+      - "\U000F0210" # mdi-fan
 
 # Oled display
 display:
@@ -27,8 +58,10 @@ display:
     update_interval: 0.5s
     address: 0x3c
     lambda: |-
-      id(fan_animation).next_frame(); it.image(0, 0, id(fan_animation));
-      it.print(0, 16, id(font1), "90%");
+      it.print(0, 0, id(icon_font), "\U000F0928");
+      if(id(fan_2).state) { id(fan_animation).next_frame(); it.image(0, 25, id(fan_animation));}
+      else {it.print(0, 24, id(icon_font), "\U000F0210");};      
+      it.printf(20, 16, id(font1), "%i", id(fan_2).speed);
 
 animation:
   - file: "shared/icon/fan_animation.gif"
@@ -40,8 +73,8 @@ sensor:
   - platform: rotary_encoder
     name: ${node_friendly_name} Rotary Encoder
     id: my_encoder
-    pin_a: D4
-    pin_b: D3
+    pin_a: D3
+    pin_b: D4
     resolution: 1
     min_value: 0
     max_value: 100
@@ -53,6 +86,13 @@ sensor:
           if (x < 0.0) return 0.0;
           if (x > 100.0) return 100.0;
           return x;
+    on_value:
+      then:
+        lambda: !lambda |-
+          if(id(fan_2).state) {
+            id(fan_2).speed = x;
+            id(pwm_output).set_level(x/100);
+          }
 
 text_sensor:
   - <<: !include shared/text_sensor/uptime_human.yaml
@@ -61,11 +101,20 @@ binary_sensor:
   - <<: !include shared/binary_sensor/connection_status.yaml
   - platform: gpio
     pin:
-      number: RX
+      number: D7
       mode: INPUT_PULLUP
       inverted: true
     name: ${node_friendly_name} Rotary Switch
-    #internal: true
+    internal: true
+    on_press:
+      then:
+        - lambda: !lambda |-
+            id(my_encoder).set_value(id(fan_2).speed);
+        - fan.toggle: fan_2
 
 switch:
   - <<: !include shared/switch/restart_switch.yaml
+  - platform: gpio
+    name: ${node_friendly_name} Relay
+    pin: D8
+    id: relay
