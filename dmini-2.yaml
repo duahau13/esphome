@@ -5,6 +5,9 @@ substitutions:
   node_board: d1_mini
   i2c_scl: D1
   i2c_sda: D2
+  encoder_a: D3
+  encoder_b: D7
+  encoder_switch: D4
   <<: !include shared/base/secrets.yaml
 
 packages:
@@ -55,6 +58,7 @@ display:
   - platform: ssd1306_i2c
     id: oled1
     model: "SSD1306 128x64"
+    brightness: 0.4
     update_interval: 0.5s
     address: 0x3c
     lambda: |-
@@ -70,11 +74,19 @@ animation:
 sensor:
   - <<: !include shared/sensor/uptime.yaml
   - <<: !include shared/sensor/wifi_signal.yaml
+  - platform: template
+    id: oled_brightness
   - platform: rotary_encoder
     name: ${node_friendly_name} Rotary Encoder
     id: my_encoder
-    pin_a: D3
-    pin_b: D4
+    pin_a:
+      number: ${encoder_a}
+      inverted: true
+      mode: INPUT_PULLUP
+    pin_b:
+      number: ${encoder_b}
+      inverted: true
+      mode: INPUT_PULLUP
     resolution: 1
     min_value: 0
     max_value: 100
@@ -88,20 +100,17 @@ sensor:
           return x;
     on_value:
       then:
-        lambda: !lambda |-
+        lambda: |-
           if(id(fan_2).state) {
             id(fan_2).speed = x;
             id(pwm_output).set_level(x/100);
           }
 
-text_sensor:
-  - <<: !include shared/text_sensor/uptime_human.yaml
-
 binary_sensor:
   - <<: !include shared/binary_sensor/connection_status.yaml
   - platform: gpio
     pin:
-      number: D7
+      number: ${encoder_switch}
       mode: INPUT_PULLUP
       inverted: true
     name: ${node_friendly_name} Rotary Switch
@@ -111,6 +120,11 @@ binary_sensor:
         - lambda: !lambda |-
             id(my_encoder).set_value(id(fan_2).speed);
         - fan.toggle: fan_2
+    on_click:
+      - min_length: 1000ms
+        max_length: 20000ms
+        then:
+          - switch.toggle: brightness
 
 switch:
   - <<: !include shared/switch/restart_switch.yaml
@@ -118,3 +132,9 @@ switch:
     name: ${node_friendly_name} Relay
     pin: D8
     id: relay
+  - platform: template
+    id: brightness
+    optimistic: true
+
+text_sensor:
+  - <<: !include shared/text_sensor/uptime_human.yaml
