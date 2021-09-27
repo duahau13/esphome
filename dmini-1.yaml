@@ -9,7 +9,7 @@ esphome:
   on_boot:
     priority: 600
     then:
-      lambda: !lambda |-
+      lambda: |-
         id(fan_1).speed = 30;
         id(my_encoder).set_value(30);
 
@@ -51,7 +51,7 @@ binary_sensor:
     internal: true
     on_press:
       then:
-        - lambda: !lambda |-
+        - lambda: |-
             id(my_encoder).set_value(id(fan_1).speed);
         - fan.toggle: fan_1
 
@@ -74,7 +74,7 @@ sensor:
           return x;
     on_value:
       then:
-        lambda: !lambda |-
+        lambda: |-
           if(id(fan_1).state) {
             id(fan_1).speed = x;
             id(pwm_output).set_level(x/100);
@@ -104,7 +104,7 @@ sensor:
       then:
         - text_sensor.template.publish:
             id: uptime_human
-            state: !lambda |-
+            state: |-
               int seconds = round(id(uptime_sensor).raw_state);
               int days = seconds / (24 * 3600);
               seconds = seconds % (24 * 3600);

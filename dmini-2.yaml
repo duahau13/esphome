@@ -17,7 +17,7 @@ esphome:
   on_boot:
     priority: 600
     then:
-      lambda: !lambda |-
+      lambda: |-
         id(fan_2).speed = 30;
         id(my_encoder).set_value(30);
 
@@ -43,14 +43,24 @@ font:
   - file: "fonts/Eurosti.ttf"
     id: font1
     size: 32
+  - file: "fonts/Eurosti.ttf"
+    id: font2
+    size: 14
   - file: "fonts/materialdesignicons-webfont.ttf"
-    id: icon_font
-    size: 15
+    id: icon_font_small
+    size: 14
     glyphs:
       - "\U000F091F" # mdi-wifi-strength-1
       - "\U000F0922" # mdi-wifi-strength-2
       - "\U000F0925" # mdi-wifi-strength-3
       - "\U000F0928" # mdi-wifi-strength-4
+      - "\U000F00E8" # mdi-cached
+      - "\U000F0079" # mdi-battery
+
+  - file: "fonts/materialdesignicons-webfont.ttf"
+    id: icon_font_big
+    size: 24
+    glyphs:
       - "\U000F0210" # mdi-fan
 
 # Oled display
@@ -62,10 +72,13 @@ display:
     update_interval: 0.5s
     address: 0x3c
     lambda: |-
-      it.print(0, 0, id(icon_font), "\U000F0928");
+      it.print(0, 0, id(icon_font_small), "\U000F0928");
+      it.print(128, 0, id(icon_font_small), TextAlign::TOP_RIGHT, "\U000F0079");
+      it.print(112, 0, id(font2), TextAlign::TOP_RIGHT, "100%");
       if(id(fan_2).state) { id(fan_animation).next_frame(); it.image(0, 25, id(fan_animation));}
-      else {it.print(0, 24, id(icon_font), "\U000F0210");};      
-      it.printf(20, 16, id(font1), "%i", id(fan_2).speed);
+      else {it.print(0, 22, id(icon_font_big), "\U000F0210");};      
+      it.printf(30, 18, id(font1), "%i", id(fan_2).speed);
+      it.print(0, 64, id(font2), TextAlign::BOTTOM_LEFT, "16:35");
 
 animation:
   - file: "shared/icon/fan_animation.gif"
@@ -98,13 +111,13 @@ sensor:
           if (x < 0.0) return 0.0;
           if (x > 100.0) return 100.0;
           return x;
-    on_value:
-      then:
-        lambda: |-
-          if(id(fan_2).state) {
-            id(fan_2).speed = x;
-            id(pwm_output).set_level(x/100);
-          }
+    # on_value:
+    #   then:
+    #     lambda: |-
+    #       if(id(fan_2).state) {
+    #         id(fan_2).speed = x;
+    #         id(pwm_output).set_level(x/100);
+    #       }
 
 binary_sensor:
   - <<: !include shared/binary_sensor/connection_status.yaml
@@ -117,7 +130,7 @@ binary_sensor:
     internal: true
     on_press:
       then:
-        - lambda: !lambda |-
+        - lambda: |-
             id(my_encoder).set_value(id(fan_2).speed);
         - fan.toggle: fan_2
     on_click:
